@@ -32,6 +32,7 @@ resource "aws_globalaccelerator_accelerator" "example" {
   tags            = module.labels.tags
 
   dynamic "attributes" {
+    for_each = var.flow_logs_enabled
     content {
       flow_logs_enabled   = var.flow_logs_enabled
       flow_logs_s3_bucket = module.s3_bucket.bucket
