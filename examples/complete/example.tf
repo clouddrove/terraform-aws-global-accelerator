@@ -13,7 +13,7 @@ module "s3_bucket" {
 }
 
 module "global_accelerator" {
-  source = "/home/ashutosh/Documents/clouddrove/test-aws-global-accelerator"
+  source = "../../"
 
   name        = "example"
   environment = "test"
