@@ -1,10 +1,10 @@
 output "id" {
-  value       = try(aws_globalaccelerator_accelerator.example[0].id, "")
+  value       = try(aws_globalaccelerator_accelerator.example.id, "")
   description = "The ARN of the accelerator"
 }
 
 output "dns_name" {
-  value       = try(aws_globalaccelerator_accelerator.example[0].dns_name, "")
+  value       = try(aws_globalaccelerator_accelerator.example.dns_name, "")
   description = "DNS name of the accelerator"
 }
 
