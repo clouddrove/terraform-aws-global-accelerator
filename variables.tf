@@ -55,8 +55,8 @@ variable "flow_logs_s3_prefix" {
 }
 
 variable "flow_logs_s3_bucket" {
-  type = string
-  default = null
+  type        = string
+  default     = null
   description = "Flow logs S3 bucket name. Required if `flow_logs_enabled` is `true`"
 }
 
