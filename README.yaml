@@ -1,0 +1,93 @@
+---
+#
+# This is the canonical configuration for the `README.md`
+# Run `make readme` to rebuild the `README.md`
+#
+
+
+# Name of this project
+name: Terraform AWS Global Accelerator
+
+# License of this project
+license: "APACHE"
+
+# Canonical GitHub repo
+github_repo: clouddrove/terraform-aws-global-accelerator
+
+# Badges to display
+badges:
+  - name: "Terraform"
+    image: "https://img.shields.io/badge/Terraform-v1.1.7-green"
+    url: "https://www.terraform.io"
+  - name: "Licence"
+    image: "https://img.shields.io/badge/License-APACHE-blue.svg"
+    url: "LICENSE.md"
+  - name: "tfsec"
+    image: "https://github.com/clouddrove/terraform-aws-global-accelerator/actions/workflows/tfsec.yml/badge.svg"
+    url: "https://github.com/clouddrove/terraform-aws-global-accelerator/actions/workflows/tfsec.yml"
+  - name: "static-checks"
+    image: "https://github.com/clouddrove/terraform-aws-global-accelerator/actions/workflows/terraform.yml/badge.svg"
+    url: "https://github.com/clouddrove/terraform-aws-global-accelerator/actions/workflows/terraform.yml"
+
+
+#  description of this project
+description: |-
+  Terraform module to create Global Accelerator resource on AWS.
+
+# extra content
+include:
+  - "terraform.md"
+
+# How to use this project
+# yamllint disable rule:line-length
+usage: |-
+  ### Simple Example
+  Here is an example of how you can use this module in your inventory structure:
+    ```hcl
+        module "global_accelerator" {
+          source = "../../"
+        
+          name        = "example"
+          environment = "test"
+          label_order = ["name", "environment"]
+        
+          flow_logs_enabled   = true
+          flow_logs_s3_bucket = module.s3_bucket.id
+          flow_logs_s3_prefix = "example"
+        
+          listeners = {
+            listener_1 = {
+              client_affinity = "SOURCE_IP"
+              
+              endpoint_group = {
+                health_check_port             = 80
+                health_check_protocol         = "HTTP"
+                health_check_path             = "/"
+                health_check_interval_seconds = 10
+                health_check_timeout_seconds  = 5
+                healthy_threshold_count       = 2
+                unhealthy_threshold_count     = 2
+                traffic_dial_percentage       = 100
+        
+                endpoint_configuration = [{
+                  client_ip_preservation_enabled = true
+                  endpoint_id                    = "arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/blue/1234567890123456"
+                  weight                         = 50
+                  }, {
+                  client_ip_preservation_enabled = false
+                  endpoint_id                    = "arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/green/1234567890123456"
+                  weight                         = 50
+                }]
+              }
+        
+              port_ranges = [
+                {
+                  from_port = 80
+                  to_port   = 80
+                },
+              ]
+              protocol = "TCP"
+            }
+          }
+        }
+    ```
