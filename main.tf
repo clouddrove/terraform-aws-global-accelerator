@@ -20,7 +20,7 @@ resource "aws_globalaccelerator_accelerator" "example" {
     for_each = var.flow_logs_enabled ? [1] : []
     content {
       flow_logs_enabled   = var.flow_logs_enabled
-      flow_logs_s3_bucket = "globalaccelerator-413"
+      flow_logs_s3_bucket = var.flow_logs_s3_bucket
       flow_logs_s3_prefix = var.flow_logs_s3_prefix
     }
   }

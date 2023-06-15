@@ -54,6 +54,12 @@ variable "flow_logs_s3_prefix" {
   description = "The prefix for the location where Amazon S3 bucket will store the flow logs. Required if `flow_logs_enabled` is `true`"
 }
 
+variable "flow_logs_s3_bucket" {
+  type = string
+  default = null
+  description = "Flow logs S3 bucket name. Required if `flow_logs_enabled` is `true`"
+}
+
 variable "listeners" {
   type        = any
   description = "Mapping of listener that defintions to create"
