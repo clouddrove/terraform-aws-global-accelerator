@@ -45,7 +45,8 @@ usage: |-
   Here is an example of how you can use this module in your inventory structure:
     ```hcl
         module "global_accelerator" {
-          source = "clouddrove/global-accelerator/aws"
+          source  = "clouddrove/global-accelerator/aws"
+          version = "1.0.0"
         
           name        = "example"
           environment = "test"
