@@ -65,13 +65,13 @@ variable "listeners" {
   description = "Mapping of listener that defintions to create"
 }
 
-variable "create_resources" {
+variable "resources_enabled" {
   type        = bool
   default     = true
   description = "Controls if resources should be created. This will affects to all the resources"
 }
 
-variable "create_listeners" {
+variable "listeners_enabled" {
   type        = bool
   default     = true
   description = "Controls if listeners should be created This will affects to only for listeners"
