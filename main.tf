@@ -1,3 +1,6 @@
+##----------------------------------------------------------------------------------
+## Labels module callled that will be used for naming and tags.
+##----------------------------------------------------------------------------------
 module "labels" {
   source  = "clouddrove/labels/aws"
   version = "1.3.0"
@@ -9,12 +12,15 @@ module "labels" {
   repository  = var.repository
 }
 
-resource "aws_globalaccelerator_accelerator" "example" {
+##----------------------------------------------------------------------------------
+## AWS Global Accelerator is a networking service that helps you improve the availability, performance, and security of your public applications.
+##----------------------------------------------------------------------------------
+resource "aws_globalaccelerator_accelerator" "main" {
 
   name            = module.labels.id
   enabled         = var.enabled
   ip_address_type = var.ip_address_type
-  tags            = module.labels.tags
+
 
   dynamic "attributes" {
     for_each = var.flow_logs_enabled ? [1] : []
@@ -24,12 +30,16 @@ resource "aws_globalaccelerator_accelerator" "example" {
       flow_logs_s3_prefix = var.flow_logs_s3_prefix
     }
   }
+  tags            = module.labels.tags
 }
 
-resource "aws_globalaccelerator_listener" "example" {
-  for_each = { for key, val in var.listeners : key => val if var.create_resources && var.create_listeners }
+##----------------------------------------------------------------------------------
+## Provides a Global Accelerator listener.
+##----------------------------------------------------------------------------------
+resource "aws_globalaccelerator_listener" "main" {
+  for_each = { for key, val in var.listeners : key => val if var.resources_enabled && var.listeners_enabled }
 
-  accelerator_arn = aws_globalaccelerator_accelerator.example.id
+  accelerator_arn = aws_globalaccelerator_accelerator.main.id
   client_affinity = lookup(each.value, "client_affinity", null)
   protocol        = lookup(each.value, "protocol", "TCP")
 
@@ -46,10 +56,14 @@ resource "aws_globalaccelerator_listener" "example" {
   }
 }
 
-resource "aws_globalaccelerator_endpoint_group" "example" {
-  for_each = { for key, val in var.listeners : key => val if var.create_resources && var.create_listeners && length(lookup(var.listeners[key], "endpoint_group", {})) > 0 }
 
-  listener_arn                  = aws_globalaccelerator_listener.example[each.key].id
+##----------------------------------------------------------------------------------
+## Provides a Global Accelerator endpoint group.
+##----------------------------------------------------------------------------------
+resource "aws_globalaccelerator_endpoint_group" "main" {
+  for_each = { for key, val in var.listeners : key => val if var.resources_enabled && var.listeners_enabled && length(lookup(var.listeners[key], "endpoint_group", {})) > 0 }
+
+  listener_arn                  = aws_globalaccelerator_listener.main[each.key].id
   endpoint_group_region         = try(each.value.endpoint_group.endpoint_group_region, null)
   health_check_interval_seconds = try(each.value.endpoint_group.health_check_interval_seconds, null)
   health_check_port             = try(each.value.endpoint_group.health_check_port, null)
@@ -63,6 +77,13 @@ resource "aws_globalaccelerator_endpoint_group" "example" {
       client_ip_preservation_enabled = try(endpoint_configuration.value.client_ip_preservation_enabled, null)
       endpoint_id                    = endpoint_configuration.value.endpoint_id
       weight                         = try(endpoint_configuration.value.weight, null)
+    }
+  }
+  dynamic "port_override" {
+    for_each = can(each.value.endpoint_group.port_override) ? each.value.endpoint_group.port_override : []
+    content {
+      endpoint_port = port_override.value.endpoint_port
+      listener_port = port_override.value.listener_port
     }
   }
 }

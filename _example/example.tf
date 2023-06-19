@@ -1,7 +1,13 @@
+####----------------------------------------------------------------------------------
+## Provider block added, Use the Amazon Web Services (AWS) provider to interact with the many resources supported by AWS.
+####----------------------------------------------------------------------------------
 provider "aws" {
   region = "us-west-2"
 }
 
+####----------------------------------------------------------------------------------
+## Amazon Simple Storage Service (Amazon S3) is an object storage service that offers industry-leading scalability, data availability, security, and performance
+####----------------------------------------------------------------------------------
 module "s3_bucket" {
   source      = "clouddrove/s3/aws"
   version     = "1.3.0"
@@ -12,8 +18,11 @@ module "s3_bucket" {
   acl         = "private"
 }
 
+####----------------------------------------------------------------------------------
+## global_accelerator model has been added.
+####----------------------------------------------------------------------------------
 module "global_accelerator" {
-  source = "../../"
+  source = ".././"
 
   name        = "example"
   environment = "test"
@@ -39,13 +48,13 @@ module "global_accelerator" {
 
         endpoint_configuration = [{
           client_ip_preservation_enabled = true
-          endpoint_id                    = "arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/blue/1234567890123456"
+          endpoint_id                    = "arn:aws:elasticloadbalancing:us-west-2:924144197303:loadbalancer/app/alb-test/434744bd5ce41a5e"
           weight                         = 50
           }, {
           client_ip_preservation_enabled = false
-          endpoint_id                    = "arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/green/1234567890123456"
+          endpoint_id                    = "arn:aws:elasticloadbalancing:eu-west-1:924144197303:loadbalancer/app/alb-test/9322fb3ce1c86a9e"
           weight                         = 50
-        }]
+         }]
       }
 
       port_ranges = [
