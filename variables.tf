@@ -76,4 +76,3 @@ variable "listeners_enabled" {
   default     = true
   description = "Controls if listeners should be created This will affects to only for listeners"
 }
-

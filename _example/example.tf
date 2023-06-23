@@ -35,33 +35,40 @@ module "global_accelerator" {
   listeners = {
     listener_1 = {
       client_affinity = "SOURCE_IP"
-      
-      endpoint_group = {
-        health_check_port             = 80
-        health_check_protocol         = "HTTP"
-        health_check_path             = "/"
-        health_check_interval_seconds = 10
-        health_check_timeout_seconds  = 5
-        healthy_threshold_count       = 2
-        unhealthy_threshold_count     = 2
-        traffic_dial_percentage       = 100
 
-        endpoint_configuration = [{
-          client_ip_preservation_enabled = true
-          endpoint_id                    = "arn:aws:elasticloadbalancing:us-west-2:924144197303:loadbalancer/app/alb-test/434744bd5ce41a5e"
-          weight                         = 50
-          }, {
-          client_ip_preservation_enabled = false
-          endpoint_id                    = "arn:aws:elasticloadbalancing:eu-west-1:924144197303:loadbalancer/app/alb-test/9322fb3ce1c86a9e"
-          weight                         = 50
-         }]
+      endpoint_group = {
+        endpoint_group_region          = "us-west-2"
+        multiple_endpoint_group_region = "eu-west-1"
+        health_check_port              = 80
+        health_check_protocol          = "HTTP"
+        health_check_path              = "/"
+        health_check_interval_seconds  = 10
+        health_check_timeout_seconds   = 5
+        healthy_threshold_count        = 2
+        unhealthy_threshold_count      = 2
+        traffic_dial_percentage        = 100
+
+        endpoint_configuration = [
+          {
+            client_ip_preservation_enabled = true
+            endpoint_id                    = "arn:aws:elasticloadbalancing:us-west-2:924144197303:loadbalancer/app/alb-test/3ed98b63e2bb9c2a"
+            weight                         = 50
+          }
+        ],
+        multiple_endpoint_configuration = [
+          {
+            client_ip_preservation_enabled = true
+            endpoint_id                    = "arn:aws:elasticloadbalancing:eu-west-1:924144197303:loadbalancer/app/alb-test/6b02ebcf5e0396d3"
+            weight                         = 50
+          }
+        ]
       }
 
       port_ranges = [
         {
           from_port = 80
           to_port   = 80
-        },
+        }
       ]
       protocol = "TCP"
     }

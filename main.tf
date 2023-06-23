@@ -30,7 +30,7 @@ resource "aws_globalaccelerator_accelerator" "main" {
       flow_logs_s3_prefix = var.flow_logs_s3_prefix
     }
   }
-  tags            = module.labels.tags
+  tags = module.labels.tags
 }
 
 ##----------------------------------------------------------------------------------
@@ -55,7 +55,6 @@ resource "aws_globalaccelerator_listener" "main" {
     }
   }
 }
-
 
 ##----------------------------------------------------------------------------------
 ## Provides a Global Accelerator endpoint group.
@@ -88,3 +87,22 @@ resource "aws_globalaccelerator_endpoint_group" "main" {
   }
 }
 
+resource "aws_globalaccelerator_endpoint_group" "multiple_endpoint" {
+  for_each                      = { for key, val in var.listeners : key => val if var.resources_enabled && var.listeners_enabled && length(lookup(var.listeners[key], "endpoint_group", {})) > 0 }
+  listener_arn                  = aws_globalaccelerator_listener.main[each.key].id
+  endpoint_group_region         = try(each.value.endpoint_group.multiple_endpoint_group_region, null)
+  health_check_interval_seconds = try(each.value.endpoint_group.health_check_interval_seconds, null)
+  health_check_port             = try(each.value.endpoint_group.health_check_port, null)
+  health_check_protocol         = try(each.value.endpoint_group.health_check_protocol, null)
+  threshold_count               = try(each.value.endpoint_group.threshold_count, null)
+  traffic_dial_percentage       = try(each.value.endpoint_group.traffic_dial_percentage, null)
+
+  dynamic "endpoint_configuration" {
+    for_each = [for e in try(each.value.endpoint_group.multiple_endpoint_configuration, []) : e if can(e.endpoint_id)]
+    content {
+      client_ip_preservation_enabled = try(endpoint_configuration.value.client_ip_preservation_enabled, null)
+      endpoint_id                    = endpoint_configuration.value.endpoint_id
+      weight                         = try(endpoint_configuration.value.weight, null)
+    }
+  }
+}
