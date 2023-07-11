@@ -13,17 +13,14 @@
 
 <p align="center">
 
-<a href="https://www.terraform.io">
-  <img src="https://img.shields.io/badge/Terraform-v1.1.7-green" alt="Terraform">
-</a>
-<a href="LICENSE.md">
-  <img src="https://img.shields.io/badge/License-APACHE-blue.svg" alt="Licence">
+<a href="https://github.com/clouddrove/terraform-aws-global-accelerator/releases/latest">
+  <img src="https://img.shields.io/github/release/clouddrove/terraform-aws-global-accelerator.svg" alt="Latest Release">
 </a>
 <a href="https://github.com/clouddrove/terraform-aws-global-accelerator/actions/workflows/tfsec.yml">
   <img src="https://github.com/clouddrove/terraform-aws-global-accelerator/actions/workflows/tfsec.yml/badge.svg" alt="tfsec">
 </a>
-<a href="https://github.com/clouddrove/terraform-aws-global-accelerator/actions/workflows/terraform.yml">
-  <img src="https://github.com/clouddrove/terraform-aws-global-accelerator/actions/workflows/terraform.yml/badge.svg" alt="static-checks">
+<a href="LICENSE.md">
+  <img src="https://img.shields.io/badge/License-APACHE-blue.svg" alt="Licence">
 </a>
 
 
@@ -76,55 +73,62 @@ This module has a few dependencies:
 
 ### Simple Example
 Here is an example of how you can use this module in your inventory structure:
-  ```hcl
-      module "global_accelerator" {
-        source  = "clouddrove/global-accelerator/aws"
-        version = "1.0.0"
-      
-        name        = "example"
-        environment = "test"
-        label_order = ["name", "environment"]
-      
-        flow_logs_enabled   = true
-        flow_logs_s3_bucket = module.s3_bucket.id
-        flow_logs_s3_prefix = "example"
-      
-        listeners = {
-          listener_1 = {
-            client_affinity = "SOURCE_IP"
-            
-            endpoint_group = {
-              health_check_port             = 80
-              health_check_protocol         = "HTTP"
-              health_check_path             = "/"
-              health_check_interval_seconds = 10
-              health_check_timeout_seconds  = 5
-              healthy_threshold_count       = 2
-              unhealthy_threshold_count     = 2
-              traffic_dial_percentage       = 100
-      
-              endpoint_configuration = [{
-                client_ip_preservation_enabled = true
-                endpoint_id                    = "arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/blue/1234567890123456"
-                weight                         = 50
-                }, {
-                client_ip_preservation_enabled = false
-                endpoint_id                    = "arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/green/1234567890123456"
-                weight                         = 50
-              }]
+```hcl
+  module "global_accelerator" {
+    source  = "clouddrove/global-accelerator/aws"
+    version = "1.0.0"
+
+    name        = "example"
+    environment = "test"
+    label_order = ["name", "environment"]
+
+    flow_logs_enabled   = true
+    flow_logs_s3_bucket = module.s3_bucket.id
+    flow_logs_s3_prefix = "example"
+
+    listeners = {
+      listener_1 = {
+        client_affinity = "SOURCE_IP"
+
+        endpoint_group = {
+          endpoint_group_region          = "us-west-2"
+          multiple_endpoint_group_region = "eu-west-1"
+          health_check_port              = 80
+          health_check_protocol          = "HTTP"
+          health_check_path              = "/"
+          health_check_interval_seconds  = 10
+          health_check_timeout_seconds   = 5
+          healthy_threshold_count        = 2
+          unhealthy_threshold_count      = 2
+          traffic_dial_percentage        = 100
+
+          endpoint_configuration = [
+            {
+              client_ip_preservation_enabled = true
+              endpoint_id                    = "arn:aws:elasticloadbalancing:us-west-2:924144197303:loadbalancer/app/alb-test/3ed98b63e2bb9c2a"
+              weight                         = 50
             }
-      
-            port_ranges = [
-              {
-                from_port = 80
-                to_port   = 80
-              },
-            ]
-            protocol = "TCP"
-          }
+          ],
+          multiple_endpoint_configuration = [
+            {
+              client_ip_preservation_enabled = true
+              endpoint_id                    = "arn:aws:elasticloadbalancing:eu-west-1:924144197303:loadbalancer/app/alb-test/6b02ebcf5e0396d3"
+              weight                         = 50
+            }
+          ]
         }
+
+        port_ranges = [
+          {
+            from_port = 80
+            to_port   = 80
+          }
+        ]
+        protocol = "TCP"
       }
-  ```
+    }
+  }
+```
 
 
 
