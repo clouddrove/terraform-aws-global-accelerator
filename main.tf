@@ -21,7 +21,6 @@ resource "aws_globalaccelerator_accelerator" "main" {
   enabled         = var.enabled
   ip_address_type = var.ip_address_type
 
-
   dynamic "attributes" {
     for_each = var.flow_logs_enabled ? [1] : []
     content {
