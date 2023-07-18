@@ -37,8 +37,8 @@ module "global_accelerator" {
       client_affinity = "SOURCE_IP"
 
       endpoint_group = {
-        endpoint_group_region          = "us-west-2"
-        multiple_endpoint_group_region = "eu-west-1"
+        endpoint_group_region          = "eu-west-1"
+        multiple_endpoint_group_region = "us-west-2"
         health_check_port              = 80
         health_check_protocol          = "HTTP"
         health_check_path              = "/"
@@ -51,14 +51,14 @@ module "global_accelerator" {
         endpoint_configuration = [
           {
             client_ip_preservation_enabled = true
-            endpoint_id                    = "arn:aws:elasticloadbalancing:us-west-2:924144197303:loadbalancer/app/alb-test/3ed98b63e2bb9c2a"
+            endpoint_id                    = "arn:aws:elasticloadbalancing:eu-west-1:924144197303:loadbalancer/app/alb-test/0f88bb12974358d8"
             weight                         = 50
           }
         ],
         multiple_endpoint_configuration = [
           {
             client_ip_preservation_enabled = true
-            endpoint_id                    = "arn:aws:elasticloadbalancing:eu-west-1:924144197303:loadbalancer/app/alb-test/6b02ebcf5e0396d3"
+            endpoint_id                    = "arn:aws:elasticloadbalancing:us-west-2:924144197303:loadbalancer/app/alb-test/9f4c48e341384ddd"
             weight                         = 50
           }
         ]
